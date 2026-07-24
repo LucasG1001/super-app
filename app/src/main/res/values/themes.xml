@@ -1,0 +1,10 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- App é dark-only; o windowBackground escuro evita flash branco antes do Compose montar. -->
+    <style name="Base.Theme.SuperApp" parent="@android:style/Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/bg_primary</item>
+        <item name="android:statusBarColor">@color/bg_primary</item>
+        <item name="android:navigationBarColor">@color/bg_primary</item>
+    </style>
+
+    <style name="Theme.SuperApp" parent="Base.Theme.SuperApp" />
+</resources>

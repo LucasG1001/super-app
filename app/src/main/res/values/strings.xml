@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">SuperApp</string>
+    <string name="alarm_channel_name">Alarmes</string>
+    <string name="alarm_channel_description">Notificações de alarmes tocando</string>
+    <string name="alarm_default_title">Alarme</string>
+    <string name="alarm_ringing">Alarme tocando</string>
+    <string name="alarm_snooze">Soneca</string>
+    <string name="alarm_dismiss">Desligar</string>
+</resources>
