@@ -94,3 +94,13 @@ fun OptionDivider() {
         color = MaterialTheme.colorScheme.outlineVariant,
     )
 }
+
+@Composable
+fun SectionHeader(text: String, modifier: Modifier = Modifier) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.labelLarge,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = modifier.padding(start = Spacing.sm, top = Spacing.md, bottom = Spacing.xs),
+    )
+}

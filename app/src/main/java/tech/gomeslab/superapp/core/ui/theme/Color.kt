@@ -30,6 +30,11 @@ val DarkSwitchTrackOff = Color(0xFF3A3A3A)
 
 val SwitchThumb = Color(0xFFFFFFFF)
 
+val AccentOrange = Color(0xFFFF9500)
+val AccentGreen = Color(0xFF30B455)
+val AccentPurple = Color(0xFF8E6CEF)
+val AccentGray = Color(0xFF8A8A8E)
+
 val RingGradientTop = Color(0xFF0B1E3D)
 val RingGradientBottom = Color(0xFF02060F)
 val RingContent = Color(0xFFFFFFFF)

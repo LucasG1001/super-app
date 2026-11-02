@@ -23,4 +23,9 @@ object Sizes {
     val bottomBarHeight = 64.dp
     val appTileIcon = 40.dp
     val selectionBox = 24.dp
+    val timelineTime = 64.dp
+    val calendarCell = 44.dp
+    val calendarDot = 5.dp
+    val categoryIcon = 36.dp
+    val smallIcon = 20.dp
 }

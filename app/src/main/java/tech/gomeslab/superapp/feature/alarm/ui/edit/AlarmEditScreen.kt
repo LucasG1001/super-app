@@ -8,11 +8,8 @@ import android.net.Uri
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -22,17 +19,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -45,23 +36,22 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.semantics.Role
 import androidx.core.content.IntentCompat
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import tech.gomeslab.superapp.core.ui.components.ChoiceDialog
+import tech.gomeslab.superapp.core.ui.components.DayCircle
 import tech.gomeslab.superapp.core.ui.components.FocusCard
 import tech.gomeslab.superapp.core.ui.components.OneUiSwitch
 import tech.gomeslab.superapp.core.ui.components.OptionDivider
 import tech.gomeslab.superapp.core.ui.components.OptionRow
-import tech.gomeslab.superapp.core.ui.components.WheelPicker
+import tech.gomeslab.superapp.core.ui.components.TimeWheels
 import tech.gomeslab.superapp.core.ui.theme.ControlActive
-import tech.gomeslab.superapp.core.ui.theme.OnPrimary
 import tech.gomeslab.superapp.core.ui.theme.Sizes
 import tech.gomeslab.superapp.core.ui.theme.Spacing
 import tech.gomeslab.superapp.feature.alarm.domain.Alarm
@@ -71,7 +61,6 @@ import tech.gomeslab.superapp.feature.alarm.ui.dayLabel
 import tech.gomeslab.superapp.feature.alarm.ui.daysLabel
 import tech.gomeslab.superapp.feature.alarm.ui.gradualVolumeLabel
 import tech.gomeslab.superapp.feature.alarm.ui.snoozeLabel
-import tech.gomeslab.superapp.feature.alarm.ui.twoDigits
 import tech.gomeslab.superapp.feature.alarm.ui.untilLabel
 import java.util.Calendar
 
@@ -253,106 +242,6 @@ fun AlarmEditScreen(
         )
         null -> Unit
     }
-}
-
-@Composable
-private fun TimeWheels(
-    hour: Int,
-    minute: Int,
-    onHourChange: (Int) -> Unit,
-    onMinuteChange: (Int) -> Unit,
-) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        WheelPicker(count = 24, selected = hour, onSelectedChange = onHourChange, label = ::twoDigits)
-        Text(
-            text = ":",
-            style = MaterialTheme.typography.displayLarge,
-            color = MaterialTheme.colorScheme.onBackground,
-            modifier = Modifier.padding(horizontal = Spacing.sm),
-        )
-        WheelPicker(count = 60, selected = minute, onSelectedChange = onMinuteChange, label = ::twoDigits)
-    }
-}
-
-@Composable
-private fun DayCircle(
-    label: String,
-    selected: Boolean,
-    isSunday: Boolean,
-    onClick: () -> Unit,
-) {
-    val background by animateColorAsState(
-        targetValue = if (selected) ControlActive else Color.Transparent,
-        label = "dayBg",
-    )
-    val textColor by animateColorAsState(
-        targetValue = when {
-            selected -> OnPrimary
-            isSunday -> MaterialTheme.colorScheme.error
-            else -> MaterialTheme.colorScheme.onSurface
-        },
-        label = "dayText",
-    )
-    Box(
-        modifier = Modifier
-            .size(Sizes.dayCircle)
-            .clip(CircleShape)
-            .background(background)
-            .clickable(onClick = onClick),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(text = label, style = MaterialTheme.typography.labelLarge, color = textColor)
-    }
-}
-
-@Composable
-private fun ChoiceDialog(
-    title: String,
-    options: List<Int>,
-    current: Int,
-    label: (Int) -> String,
-    onSelect: (Int) -> Unit,
-    onDismiss: () -> Unit,
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        containerColor = MaterialTheme.colorScheme.surface,
-        shape = MaterialTheme.shapes.large,
-        title = { Text(title) },
-        text = {
-            Column {
-                options.forEach { option ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .selectable(
-                                selected = option == current,
-                                onClick = { onSelect(option) },
-                                role = Role.RadioButton,
-                            )
-                            .padding(vertical = Spacing.xs),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        RadioButton(
-                            selected = option == current,
-                            onClick = null,
-                            colors = RadioButtonDefaults.colors(selectedColor = ControlActive),
-                        )
-                        Text(
-                            text = label(option),
-                            style = MaterialTheme.typography.bodyLarge,
-                            modifier = Modifier.padding(start = Spacing.md),
-                        )
-                    }
-                }
-            }
-        },
-        confirmButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancelar", color = ControlActive)
-            }
-        },
-    )
 }
 
 private fun ringtonePickerIntent(currentUri: String?): Intent =

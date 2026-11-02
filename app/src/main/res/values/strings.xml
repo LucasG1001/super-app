@@ -6,4 +6,12 @@
     <string name="alarm_ringing">Alarme tocando</string>
     <string name="alarm_snooze">Soneca</string>
     <string name="alarm_dismiss">Desligar</string>
+    <string name="reminder_channel_name">Lembretes</string>
+    <string name="reminder_channel_description">Lembretes, remédios e eventos</string>
+    <string name="refill_channel_name">Estoque de remédios</string>
+    <string name="refill_channel_description">Avisos de que um remédio está acabando</string>
+    <string name="rest_running_channel_name">Descanso em andamento</string>
+    <string name="rest_running_channel_description">Contagem regressiva do descanso entre séries</string>
+    <string name="rest_done_channel_name">Fim do descanso</string>
+    <string name="rest_done_channel_description">Aviso de que o descanso acabou</string>
 </resources>

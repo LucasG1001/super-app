@@ -12,6 +12,8 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Alarm
+import androidx.compose.material.icons.filled.FitnessCenter
+import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -32,9 +34,15 @@ private data class MiniApp(
 )
 
 @Composable
-fun HomeScreen(onOpenAlarm: () -> Unit) {
+fun HomeScreen(
+    onOpenAlarm: () -> Unit,
+    onOpenReminders: () -> Unit,
+    onOpenWorkout: () -> Unit,
+) {
     val apps = listOf(
         MiniApp("alarm", "Despertador", Icons.Filled.Alarm, onOpenAlarm),
+        MiniApp("reminder", "Lembretes", Icons.Filled.NotificationsActive, onOpenReminders),
+        MiniApp("workout", "Treino", Icons.Filled.FitnessCenter, onOpenWorkout),
     )
 
     ExtendedScaffold(title = "SuperApp") { innerPadding ->

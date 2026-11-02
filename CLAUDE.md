@@ -19,6 +19,13 @@ Features ("apps") atuais:
 - **Despertador** (`feature/alarm`) — alarmes locais completos: criar/editar/excluir, recorrência
   por dia da semana, toque, soneca e aumento gradual do volume por alarme, tela de toque sobre o lockscreen,
   persistência e reagendamento após reboot.
+- **Lembretes** (`feature/reminder`) — lembrete simples, remédio (vários horários/dia, duração,
+  estoque com aviso de recompra, notificação insistente Tomei/Adiar/Pular) e evento (aviso com
+  antecedência); categorias Hoje/Agendados/Remédios/Concluídos e calendário com feriados de
+  Indaiatuba/SP.
+- **Treino** (`feature/workout`) — musculação no estilo Hevy: fichas (A/B/C…) montadas pelo usuário,
+  treino em andamento com coluna "Anterior", tipos de série, descanso automático, recordes pessoais,
+  histórico com gráficos e medidas corporais (peso, % gordura, 14 circunferências).
 
 ## Comandos de desenvolvimento
 
@@ -49,6 +56,10 @@ Antes de considerar uma mudança pronta: `assembleDebug` e `lintDebug` passam, e
 - **Hilt 2.60.x** — versões < 2.59 não suportam AGP 9 ("Android BaseExtension not found").
 - `gradle.properties` tem `android.disallowKotlinSourceSets=false` (necessário para o KSP com
   Kotlin embutido).
+- **`java.time` via core library desugaring** (`minSdk 24`); o código novo usa `java.time`, o
+  Despertador ainda usa `Calendar`.
+- **Room exporta o schema** em `app/schemas/` (versionado). Migrações novas: preferir
+  `@AutoMigration`; SQL manual só quando a auto-migração não cobre o caso.
 - O tema XML (`themes.xml`) usa parents de plataforma (`Theme.Material.Light.NoActionBar` /
   `values-night`: `Theme.Material.NoActionBar`) — não há a lib Material Components (Views); as cores
   reais vêm do Compose. `windowBackground` = `@color/bg_window` (por modo) evita flash na abertura;
@@ -90,8 +101,10 @@ core/
   di/                    # DatabaseModule, CommandModule
   navigation/            # Routes, AppNavHost
   ui/theme/              # Color, Type, Shape, Dimens, Theme (design tokens One UI)
-  ui/components/         # ExtendedScaffold (header One UI que colapsa), WheelPicker, FocusCard…
+  ui/components/         # ExtendedScaffold, EditorScaffold, WheelPicker, FocusCard, LineChart, Pickers…
   ui/home/               # HomeScreen (launcher em grade dos "apps")
+  holiday/               # Holiday/HolidayRule/Easter (puros) + IndaiatubaHolidays (dados da cidade)
+  time/                  # minuteTicker()
 feature/alarm/
   data/                  # AlarmEntity, AlarmDao, AlarmRepository
   domain/                # Alarm, mappers, NextTrigger/NextAlarm (puros/testáveis), AlarmScheduler
@@ -99,6 +112,19 @@ feature/alarm/
   receiver/              # AlarmReceiver (dispara), BootReceiver (reagenda pós-boot)
   command/               # AlarmCommandHandler (namespace "alarm")
   AlarmIntents / AlarmNotifier   # actions/extras e a notificação de alarme tocando
+feature/reminder/
+  data/                  # ReminderEntity, ReminderLogEntity, ReminderDao, ReminderRepository
+  domain/                # Reminder, ReminderSchedule e Agenda (puros/testáveis)
+  ReminderScheduler / ReminderNotifier / ReminderActions   # AlarmManager, notificações, ações
+  receiver/              # ReminderReceiver (disparo + botões da notificação), ReminderBootReceiver
+  ui/home · ui/category · ui/edit · ui/calendar
+  command/               # ReminderCommandHandler (namespace "reminder")
+feature/workout/
+  data/                  # entidades (exercises, routines, workouts, workout_sets, body_measurements), WorkoutDao, WorkoutRepository
+  domain/                # modelos + WorkoutMath (1RM, recordes, "anterior", rotação de fichas — puros/testáveis)
+  rest/                  # RestTimer (descanso: notificação com contagem + alarme exato no fim) e receiver
+  ui/home · ui/routine · ui/exercise · ui/active · ui/history · ui/measure
+  command/               # WorkoutCommandHandler (namespace "workout")
 ```
 
 ### Despertador — invariantes
@@ -119,12 +145,39 @@ feature/alarm/
   alarme do sistema; com rampa ativa, a vibração só começa na metade do tempo (`AlarmPlayer`).
 - **Schema do Room**: mudanças exigem `Migration` explícita em `AppDatabase` (há alarmes salvos nos
   aparelhos; não usar destructive migration).
+- **Reagendamento ao abrir o processo** (`SuperApp.onCreate`): "forçar parada" e reinstalação apagam
+  o AlarmManager; reagendar alarmes e lembretes a cada início é idempotente.
 - **Som/vibração ficam no service, não na Activity** — o full-screen intent só abre a Activity com
   a tela bloqueada; desbloqueada, o sistema mostra só a notificação. Por isso o alarme precisa
   tocar independentemente da tela abrir, e a notificação leva os botões Soneca/Desligar.
 - A `AlarmRingActivity` é só a UI de dispensa (aparece sobre o lockscreen): arrastar o X desliga e
   o botão Soneca adia; ambos encaminham a ação ao `AlarmService`. Exige a permissão **full-screen intent**
   (Android 14+ não concede automaticamente; pedimos na tela de lista).
+
+### Lembretes — invariantes
+
+- Um único PendingIntent "próxima ocorrência" por lembrete (`setExactAndAllowWhileIdle`, sem
+  `setAlarmClock` para não mostrar o ícone de despertador); ao disparar, agenda a seguinte.
+- Ocorrências respondidas ficam em `reminder_logs` (único por lembrete+horário) e são puladas pelo
+  `ReminderSchedule.nextOccurrence`. "Tomei" baixa o estoque; desfazer devolve.
+- Remédio repete a notificação a cada 10 min, até 3 vezes, enquanto não houver resposta.
+- Toda resposta (notificação, UI, comando) passa por `ReminderActions`.
+- **Feriados**: calculados offline (`core/holiday`). Os municipais de Indaiatuba vêm do edital anual
+  do TJSP/CSM — revisar `IndaiatubaHolidays` a cada ano.
+
+### Treino — invariantes
+
+- Só existe **um treino em andamento** (`workouts.finishedAt IS NULL`); ele vive no banco e sobrevive
+  ao fechamento do app. Ao finalizar, séries não marcadas são apagadas.
+- Séries são editadas **campo a campo** (`updateWeight`/`updateReps`…) para não sobrescrever edições
+  rápidas; o registro inteiro só é gravado ao marcar/desmarcar a série.
+- "Anterior" = séries da sessão finalizada mais recente do exercício, por posição.
+- Recordes e volume ignoram aquecimento e séries não concluídas; 1RM estimado por Epley; a primeira
+  vez de um exercício não gera recorde. A próxima ficha sugerida segue a ordem das fichas (A→B→C→A).
+- Exercícios não vêm pré-cadastrados: o usuário cria (inclusive pela busca). Excluir = arquivar,
+  para não quebrar o histórico (sem uso, é apagado de vez).
+- Resultado entre telas (ex.: exercício escolhido) via `SavedStateHandle` da entrada anterior
+  (`Routes.RESULT_*`).
 
 ## Convenções
 
