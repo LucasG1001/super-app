@@ -11,13 +11,14 @@ Messaging (FCM)** — fase 2. Hoje a **camada de comandos já existe e é funcio
 (sem Firebase).
 
 Segue a filosofia do projeto irmão `stash` (web): camadas por feature, registries para cortar
-boilerplate, **design tokens centralizados** (tema dark, accent roxo `#8B5CF6`), código em
+boilerplate, **design tokens centralizados** (paleta inspirada no One UI da Samsung: primária
+azul `#0381FE`, claro/escuro seguindo o sistema), código em
 **inglês** e textos de UI em **português**.
 
 Features ("apps") atuais:
 - **Despertador** (`feature/alarm`) — alarmes locais completos: criar/editar/excluir, recorrência
-  por dia da semana, tela de toque sobre o lockscreen, soneca, persistência e reagendamento após
-  reboot.
+  por dia da semana, toque, soneca e aumento gradual do volume por alarme, tela de toque sobre o lockscreen,
+  persistência e reagendamento após reboot.
 
 ## Comandos de desenvolvimento
 
@@ -48,8 +49,10 @@ Antes de considerar uma mudança pronta: `assembleDebug` e `lintDebug` passam, e
 - **Hilt 2.60.x** — versões < 2.59 não suportam AGP 9 ("Android BaseExtension not found").
 - `gradle.properties` tem `android.disallowKotlinSourceSets=false` (necessário para o KSP com
   Kotlin embutido).
-- O tema XML (`themes.xml`) usa parent de plataforma `@android:style/Theme.Material.NoActionBar` —
-  não há a lib Material Components (Views); as cores reais vêm do Compose.
+- O tema XML (`themes.xml`) usa parents de plataforma (`Theme.Material.Light.NoActionBar` /
+  `values-night`: `Theme.Material.NoActionBar`) — não há a lib Material Components (Views); as cores
+  reais vêm do Compose. `windowBackground` = `@color/bg_window` (por modo) evita flash na abertura;
+  `Theme.SuperApp.Ring` (tela de toque) é sempre escuro.
 
 ## Arquitetura
 
@@ -86,11 +89,12 @@ core/
   data/                  # AppDatabase (Room)
   di/                    # DatabaseModule, CommandModule
   navigation/            # Routes, AppNavHost
-  ui/theme/              # Color, Type, Shape, Dimens, Theme (design tokens do stash)
+  ui/theme/              # Color, Type, Shape, Dimens, Theme (design tokens One UI)
+  ui/components/         # ExtendedScaffold (header One UI que colapsa), WheelPicker, FocusCard…
   ui/home/               # HomeScreen (launcher em grade dos "apps")
 feature/alarm/
   data/                  # AlarmEntity, AlarmDao, AlarmRepository
-  domain/                # Alarm, mappers, NextTrigger (puro/testável), AlarmScheduler
+  domain/                # Alarm, mappers, NextTrigger/NextAlarm (puros/testáveis), AlarmScheduler
   ui/list · ui/edit · ui/ring   # telas + ViewModels; AlarmRingActivity (full-screen)
   receiver/              # AlarmReceiver (dispara), BootReceiver (reagenda pós-boot)
   command/               # AlarmCommandHandler (namespace "alarm")
@@ -111,11 +115,15 @@ feature/alarm/
   janela de background-activity-launch, o que abre a tela mesmo desbloqueado (quando o SO permite;
   senão o full-screen intent cobre o caso de tela bloqueada). Repetentes são **reagendados na hora
   do disparo**.
+- **Aumento gradual**: `GradualVolume` (puro) faz a rampa linear em dB até o máximo do volume de
+  alarme do sistema; com rampa ativa, a vibração só começa na metade do tempo (`AlarmPlayer`).
+- **Schema do Room**: mudanças exigem `Migration` explícita em `AppDatabase` (há alarmes salvos nos
+  aparelhos; não usar destructive migration).
 - **Som/vibração ficam no service, não na Activity** — o full-screen intent só abre a Activity com
   a tela bloqueada; desbloqueada, o sistema mostra só a notificação. Por isso o alarme precisa
   tocar independentemente da tela abrir, e a notificação leva os botões Soneca/Desligar.
-- A `AlarmRingActivity` é só a UI de dispensa (aparece sobre o lockscreen); seus botões
-  encaminham Soneca/Desligar ao `AlarmService`. Exige a permissão **full-screen intent**
+- A `AlarmRingActivity` é só a UI de dispensa (aparece sobre o lockscreen): arrastar o X desliga e
+  o botão Soneca adia; ambos encaminham a ação ao `AlarmService`. Exige a permissão **full-screen intent**
   (Android 14+ não concede automaticamente; pedimos na tela de lista).
 
 ## Convenções
@@ -123,9 +131,10 @@ feature/alarm/
 - **Idioma**: código (variáveis, tipos, arquivos) em inglês; textos ao usuário (UI, mensagens de
   comando) em português.
 - **Kotlin**: sem `!!` desnecessário; use `data class` e sealed types para modelos/resultados.
-- **UI/estilo**: Compose Material 3, tema **dark-only**. Sempre consuma os tokens de
-  `core/ui/theme` (cores, `Spacing`, `Shapes`, `Typography`) — **nunca** hardcode de cor/tamanho
-  nos composables.
+- **UI/estilo**: Compose Material 3 com visual One UI; tema claro/escuro segue o sistema (a tela
+  de toque é sempre escura). Sempre consuma os tokens de `core/ui/theme` (cores, `Spacing`, `Sizes`,
+  `Shapes`, `Typography`) e os componentes de `core/ui/components` — **nunca** hardcode de
+  cor/tamanho nos composables.
 - **Estado**: ViewModel + `StateFlow`; nada de estado global mutável fora disso.
 - **DI**: Hilt. Features se plugam ao "modo API" registrando um `CommandHandler` via `@IntoSet`.
 - **Sem comentários no código**, exceto para registrar uma restrição não óbvia.

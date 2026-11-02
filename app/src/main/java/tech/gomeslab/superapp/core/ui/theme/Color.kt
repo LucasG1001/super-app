@@ -2,33 +2,36 @@ package tech.gomeslab.superapp.core.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Design tokens portados de stash (frontend/src/styles/global.css). Tema dark, accent roxo.
-// Regra: nunca use hex direto nos composables — consuma sempre estes tokens ou o MaterialTheme.
+// Tokens inspirados no One UI (Samsung). Primária e controle ativado vêm das diretrizes oficiais;
+// fundos/superfícies não são publicados lá e foram escolhidos por aproximação.
+// Regra: nunca use hex direto nos composables — consuma estes tokens ou o MaterialTheme.
 
-// Backgrounds
-val BgPrimary = Color(0xFF0A0A0F)
-val BgSecondary = Color(0xFF12121A)
-val BgTertiary = Color(0xFF1A1A28)
-val BgHover = Color(0xFF1E1E30)
-val Surface = Color(0xFF1C1C2E)
-val SurfaceHover = Color(0xFF252540)
+val Primary = Color(0xFF0381FE)
+val ControlActive = Color(0xFF3E91FF)
+val OnPrimary = Color(0xFFFFFFFF)
+val Error = Color(0xFFE5484D)
+val OnError = Color(0xFFFFFFFF)
 
-// Bordas
-val BorderDefault = Color(0xFF2A2A40)
-val BorderSubtle = Color(0xFF1E1E30)
+val LightBackground = Color(0xFFF2F2F2)
+val LightCard = Color(0xFFFFFFFF)
+val LightCardHigh = Color(0xFFE9E9E9)
+val LightText = Color(0xFF111111)
+val LightTextSecondary = Color(0xFF7A7A7A)
+val LightDivider = Color(0xFFE3E3E3)
+val LightSwitchTrackOff = Color(0xFFD5D5D5)
 
-// Texto
-val TextPrimary = Color(0xFFE8E8F0)
-val TextSecondary = Color(0xFF9090A8)
-val TextTertiary = Color(0xFF606078)
+val DarkBackground = Color(0xFF000000)
+val DarkCard = Color(0xFF171717)
+val DarkCardHigh = Color(0xFF262626)
+val DarkText = Color(0xFFF5F5F5)
+val DarkTextSecondary = Color(0xFF9A9A9A)
+val DarkDivider = Color(0xFF2A2A2A)
+val DarkSwitchTrackOff = Color(0xFF3A3A3A)
 
-// Accent (marca)
-val Accent = Color(0xFF8B5CF6)
-val AccentHover = Color(0xFF7C3AED)
-val OnAccent = Color(0xFF0A0A0F)
+val SwitchThumb = Color(0xFFFFFFFF)
 
-// Semânticas
-val Success = Color(0xFF10B981)
-val Warning = Color(0xFFF59E0B)
-val Error = Color(0xFFEF4444)
-val Info = Color(0xFF3B82F6)
+val RingGradientTop = Color(0xFF0B1E3D)
+val RingGradientBottom = Color(0xFF02060F)
+val RingContent = Color(0xFFFFFFFF)
+val RingContentSecondary = Color(0xB3FFFFFF)
+val RingSurface = Color(0x26FFFFFF)

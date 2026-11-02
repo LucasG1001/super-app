@@ -1,5 +1,6 @@
 package tech.gomeslab.superapp.feature.alarm.data
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -15,5 +16,6 @@ data class AlarmEntity(
     val soundUri: String?,
     val vibrate: Boolean,
     val snoozeMinutes: Int,
+    @ColumnInfo(defaultValue = "0") val gradualVolumeSeconds: Int = 0,
     val createdAt: Long,
 )

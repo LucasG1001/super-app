@@ -12,6 +12,7 @@ fun AlarmEntity.toDomain(): Alarm = Alarm(
     soundUri = soundUri,
     vibrate = vibrate,
     snoozeMinutes = snoozeMinutes,
+    gradualVolumeSeconds = gradualVolumeSeconds,
     createdAt = createdAt,
 )
 
@@ -25,5 +26,6 @@ fun Alarm.toEntity(): AlarmEntity = AlarmEntity(
     soundUri = soundUri,
     vibrate = vibrate,
     snoozeMinutes = snoozeMinutes,
+    gradualVolumeSeconds = gradualVolumeSeconds,
     createdAt = createdAt,
 )

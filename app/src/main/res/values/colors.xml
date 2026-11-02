@@ -2,5 +2,5 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="bg_primary">#FF0A0A0F</color>
+    <color name="bg_window">#FFF2F2F2</color>
 </resources>

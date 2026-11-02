@@ -22,8 +22,10 @@ data class AlarmEditState(
     val minute: Int = 0,
     val label: String = "",
     val daysOfWeek: Int = 0,
+    val soundUri: String? = null,
     val vibrate: Boolean = true,
     val snoozeMinutes: Int = 5,
+    val gradualVolumeSeconds: Int = 0,
     val isNew: Boolean = true,
 )
 
@@ -49,8 +51,10 @@ class AlarmEditViewModel @Inject constructor(
                         minute = alarm.minute,
                         label = alarm.label,
                         daysOfWeek = alarm.daysOfWeek,
+                        soundUri = alarm.soundUri,
                         vibrate = alarm.vibrate,
                         snoozeMinutes = alarm.snoozeMinutes,
+                        gradualVolumeSeconds = alarm.gradualVolumeSeconds,
                         isNew = false,
                     )
                 }
@@ -66,7 +70,9 @@ class AlarmEditViewModel @Inject constructor(
         )
     }
 
-    fun setTime(hour: Int, minute: Int) = _state.update { it.copy(hour = hour, minute = minute) }
+    fun setHour(hour: Int) = _state.update { it.copy(hour = hour) }
+
+    fun setMinute(minute: Int) = _state.update { it.copy(minute = minute) }
 
     fun setLabel(label: String) = _state.update { it.copy(label = label) }
 
@@ -74,9 +80,13 @@ class AlarmEditViewModel @Inject constructor(
         it.copy(daysOfWeek = it.daysOfWeek xor (1 shl dayBitIndex))
     }
 
+    fun setSound(soundUri: String?) = _state.update { it.copy(soundUri = soundUri) }
+
     fun setVibrate(vibrate: Boolean) = _state.update { it.copy(vibrate = vibrate) }
 
     fun setSnooze(minutes: Int) = _state.update { it.copy(snoozeMinutes = minutes) }
+
+    fun setGradualVolume(seconds: Int) = _state.update { it.copy(gradualVolumeSeconds = seconds) }
 
     fun save(onDone: () -> Unit) {
         viewModelScope.launch {
@@ -89,9 +99,10 @@ class AlarmEditViewModel @Inject constructor(
                 label = s.label.trim(),
                 enabled = true,
                 daysOfWeek = s.daysOfWeek,
-                soundUri = existing?.soundUri,
+                soundUri = s.soundUri,
                 vibrate = s.vibrate,
                 snoozeMinutes = s.snoozeMinutes,
+                gradualVolumeSeconds = s.gradualVolumeSeconds,
                 createdAt = existing?.createdAt ?: System.currentTimeMillis(),
             )
             val id = repository.upsert(alarm)

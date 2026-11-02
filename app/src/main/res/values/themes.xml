@@ -1,10 +1,13 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- App é dark-only; o windowBackground escuro evita flash branco antes do Compose montar. -->
-    <style name="Base.Theme.SuperApp" parent="@android:style/Theme.Material.NoActionBar">
-        <item name="android:windowBackground">@color/bg_primary</item>
-        <item name="android:statusBarColor">@color/bg_primary</item>
-        <item name="android:navigationBarColor">@color/bg_primary</item>
+    <!-- windowBackground acompanha o tema claro/escuro (values-night) e evita flash antes do Compose montar. -->
+    <style name="Base.Theme.SuperApp" parent="@android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/bg_window</item>
     </style>
 
     <style name="Theme.SuperApp" parent="Base.Theme.SuperApp" />
+
+    <!-- A tela de toque é sempre escura (gradiente), independente do tema do sistema. -->
+    <style name="Theme.SuperApp.Ring" parent="@android:style/Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/black</item>
+    </style>
 </resources>

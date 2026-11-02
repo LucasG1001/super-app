@@ -40,7 +40,7 @@
             android:excludeFromRecents="true"
             android:launchMode="singleInstance"
             android:showOnLockScreen="true"
-            android:theme="@style/Theme.SuperApp"
+            android:theme="@style/Theme.SuperApp.Ring"
             android:turnScreenOn="true" />
 
         <service

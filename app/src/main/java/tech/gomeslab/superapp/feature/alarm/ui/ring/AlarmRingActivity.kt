@@ -5,6 +5,7 @@ import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -29,12 +30,13 @@ class AlarmRingActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         showOverLockScreen()
 
         val id = intent.getLongExtra(AlarmIntents.EXTRA_ALARM_ID, AlarmIntents.NO_ID)
 
         setContent {
-            SuperAppTheme {
+            SuperAppTheme(darkTheme = true) {
                 AlarmRingScreen(
                     alarm = alarm,
                     onDismiss = { sendToService(AlarmIntents.ACTION_STOP) },

@@ -12,6 +12,7 @@ data class Alarm(
     val soundUri: String? = null,
     val vibrate: Boolean = true,
     val snoozeMinutes: Int = 5,
+    val gradualVolumeSeconds: Int = 0,
     val createdAt: Long = 0,
 ) {
     val repeats: Boolean get() = daysOfWeek != 0

@@ -6,20 +6,36 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
-// Escala tipográfica alinhada aos tokens do stash. Fonte de sistema por enquanto
-// (Inter pode ser adicionada em res/font e trocada aqui sem mexer nas telas).
 private val AppFontFamily = FontFamily.SansSerif
 
 val Typography = Typography(
+    displayLarge = TextStyle(
+        fontFamily = AppFontFamily,
+        fontWeight = FontWeight.Light,
+        fontSize = 56.sp,
+        lineHeight = 64.sp,
+    ),
+    displayMedium = TextStyle(
+        fontFamily = AppFontFamily,
+        fontWeight = FontWeight.Light,
+        fontSize = 40.sp,
+        lineHeight = 48.sp,
+    ),
     displaySmall = TextStyle(
         fontFamily = AppFontFamily,
-        fontWeight = FontWeight.Bold,
-        fontSize = 36.sp,
-        lineHeight = 44.sp,
+        fontWeight = FontWeight.Light,
+        fontSize = 72.sp,
+        lineHeight = 80.sp,
+    ),
+    headlineLarge = TextStyle(
+        fontFamily = AppFontFamily,
+        fontWeight = FontWeight.Normal,
+        fontSize = 32.sp,
+        lineHeight = 40.sp,
     ),
     headlineMedium = TextStyle(
         fontFamily = AppFontFamily,
-        fontWeight = FontWeight.SemiBold,
+        fontWeight = FontWeight.Medium,
         fontSize = 24.sp,
         lineHeight = 32.sp,
     ),
@@ -50,7 +66,7 @@ val Typography = Typography(
     labelLarge = TextStyle(
         fontFamily = AppFontFamily,
         fontWeight = FontWeight.Medium,
-        fontSize = 14.sp,
+        fontSize = 15.sp,
         lineHeight = 20.sp,
     ),
     labelMedium = TextStyle(

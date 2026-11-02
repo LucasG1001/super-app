@@ -69,7 +69,7 @@ class AlarmService : Service() {
             startForeground(AlarmNotifications.RINGING_NOTIFICATION_ID, notification)
         }
 
-        player.start(alarm.soundUri, alarm.vibrate)
+        player.start(alarm.soundUri, alarm.vibrate, alarm.gradualVolumeSeconds)
     }
 
     private fun snooze() {

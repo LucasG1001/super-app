@@ -38,6 +38,7 @@ class AlarmCommandHandler @Inject constructor(
             daysOfWeek = command.payload["daysOfWeek"]?.toIntOrNull() ?: 0,
             snoozeMinutes = command.payload["snoozeMinutes"]?.toIntOrNull() ?: 5,
             vibrate = command.payload["vibrate"]?.toBooleanStrictOrNull() ?: true,
+            gradualVolumeSeconds = command.payload["gradualVolumeSeconds"]?.toIntOrNull()?.coerceAtLeast(0) ?: 0,
             enabled = true,
             createdAt = System.currentTimeMillis(),
         )
